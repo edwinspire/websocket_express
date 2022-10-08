@@ -4,7 +4,7 @@
 import WebSocket, { WebSocketServer } from 'ws'
 import { EventEmitter } from 'node:events'
 
-export  class WebSocketExpress extends EventEmitter {
+export class WebSocketExpress extends EventEmitter {
   constructor(httpServer, root_path, authentication_callback) {
     super()
     this.root_path = root_path || '/ws'
@@ -68,12 +68,14 @@ export  class WebSocketExpress extends EventEmitter {
           if (this.authentication(request, socket, head, urlData)) {
             this._createWebSocket(request, socket, head, urlData)
           } else {
+            socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n')
             socket.destroy()
           }
         } else {
           this._createWebSocket(request, socket, head, urlData)
         }
       } else {
+        socket.write('HTTP/1.1 404 Not Found\r\n\r\n')
         socket.destroy()
       }
     })
