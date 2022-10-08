@@ -54,7 +54,7 @@ export class WebSocketExpress extends EventEmitter {
         })
       })
 
-      this.emit('connection', { socket: socketc, url: url_data })
+      this.emit('client_connection', { socket: socketc, url: url_data })
       wsServer.emit('connection', socketc, request)
     })
   }
