@@ -4,10 +4,10 @@
 import WebSocket, { WebSocketServer } from 'ws'
 import { EventEmitter } from 'node:events'
 
-export class WebSocketExpress extends EventEmitter {
+export default class WebSocketExpress extends EventEmitter {
   constructor(httpServer, root_path, authentication_callback) {
     super()
-    this.root_path = this.root_path || '/ws'
+    this.root_path = root_path || '/ws'
     this.authentication = authentication_callback
     this.paths = []
     this.httpServer = httpServer
