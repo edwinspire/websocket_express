@@ -5,19 +5,11 @@ import WebSocket, { WebSocketServer } from 'ws'
 import { EventEmitter } from 'node:events'
 
 export class WSServer extends EventEmitter {
-  constructor(httpServer, authentication_callback) {
+  constructor(httpServer, root_path, authentication_callback) {
     super()
+    this.root_path = this.root_path || '/ws'
     this.authentication = authentication_callback
-    this.pathDevices = '/ws/device'
-    this.wsPaths = []
-    //this.wsDevices = {}
-
-    /*
-    this.authorizedDevices = {
-      '1e9058bf-26b1-4341-a694-bbbd5833c00e': { geox: 0, geoy: 0 },
-      telegrambot: { geox: 0, geoy: 0 },
-    }
-    */
+    this.paths = []
     this.httpServer = httpServer
     this._upgrade()
   }
@@ -28,8 +20,7 @@ export class WSServer extends EventEmitter {
 
   // Crea el websocket en el servidor
   _createWebSocket(request, socket, head, url_data) {
-    console.log('_createWebSocket > = ', url_data)
-    let wscreated = this.wsPaths.find((w) => w.path === url_data.pathname)
+    let wscreated = this.paths.find((w) => w.path === url_data.pathname)
     if (wscreated) {
       this._wshandleUpgrade(
         wscreated.WebSocket,
@@ -46,7 +37,7 @@ export class WSServer extends EventEmitter {
 
       this._wshandleUpgrade(WSServer, request, socket, head, url_data)
       // Agrega el path a la lista
-      this.wsPaths.push({
+      this.paths.push({
         path: url_data.pathname,
         WebSocket: WSServer,
       })
@@ -55,8 +46,6 @@ export class WSServer extends EventEmitter {
 
   _wshandleUpgrade(wsServer, request, socket, head, url_data) {
     wsServer.handleUpgrade(request, socket, head, (socketc) => {
-      console.log('conectado 2 ' + url_data.pathname)
-
       socketc.on('message', (message) => {
         this.emit('message', {
           socket: socketc,
@@ -74,7 +63,7 @@ export class WSServer extends EventEmitter {
     this.httpServer.on('upgrade', (request, socket, head) => {
       let urlData = this._url(request.url)
 
-      if (urlData.pathname.startsWith('/ws')) {
+      if (urlData.pathname.startsWith(this.root_path)) {
         if (this.authentication) {
           if (this.authentication(request, socket, head, urlData)) {
             this._createWebSocket(request, socket, head, urlData)
