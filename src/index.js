@@ -22,7 +22,7 @@ export class WebSocketExpress extends EventEmitter {
     if (cli && cli.WebSocket) {
       cli.WebSocket.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
-          client.send(payload, { binary: isBinary });
+          client.send(payload);
         }
       });
     }
