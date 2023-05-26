@@ -20,9 +20,9 @@ export class WebSocketExpress extends EventEmitter {
     });
 
     if (cli && cli.WebSocket) {
-      cli.WebSocket.clients.forEach((client) => {
+      cli.WebSocket.clients.forEach(function each(client) {
         if (client.readyState === WebSocket.OPEN) {
-          client.send(payload);
+          client.send(JSON.stringify(payload));
         }
       });
     }
