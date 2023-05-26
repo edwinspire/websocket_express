@@ -19,11 +19,13 @@ export class WebSocketExpress extends EventEmitter {
       return p.path == path;
     });
 
-    cli.WebSocket.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(payload, { binary: isBinary });
-      }
-    });
+    if (cli && cli.WebSocket) {
+      cli.WebSocket.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(payload, { binary: isBinary });
+        }
+      });
+    }
   }
 
   _url(url) {
